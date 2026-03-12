@@ -5,6 +5,9 @@ import { roomManager } from '../room/RoomManager';
 import { aiController } from '../ai/AIController';
 import { writeGameLog, LOG_FILE } from '../utils/logger';
 
+// 最大下注金额限制
+const MAX_BET = 1000;
+
 type GameEventCallback = (event: string, data: any) => void;
 type SendToPlayerCallback = (playerId: string, event: string, data: any) => void;
 
@@ -502,6 +505,11 @@ export class GameFlow {
           writeGameLog(`processAction: raise failed - invalid amount ${amount}`);
           return false;
         }
+        // 限制最大加注金额为 MAX_BET = 1000
+        if (amount > MAX_BET) {
+          writeGameLog(`processAction: raise failed - amount ${amount} exceeds max bet ${MAX_BET}`);
+          return false;
+        }
         // amount 是额外加注额（无论当前是否需要跟注）
         // 总下注 = 当前下注 + 额外加注额
         const totalBet = player.currentBet + amount;
@@ -897,9 +905,18 @@ export class GameFlow {
     this.nextTurn();
   }
 
-  // AI思考时间固定为3秒（方便测试）
+  // AI思考时间：根据AI等级，Lv1最快(2s)，Lv2中等(2-6s)，Lv3最慢(4-10s)
   private getAIThinkTime(aiLevel?: AILv): number {
-    return 3000;
+    switch (aiLevel) {
+      case 1: // Lv1: 2秒固定
+        return 2000;
+      case 2: // Lv2: 2-6秒随机
+        return 2000 + Math.floor(Math.random() * 4000);
+      case 3: // Lv3: 4-10秒随机
+        return 4000 + Math.floor(Math.random() * 6000);
+      default:
+        return 3000;
+    }
   }
 
   // 调度下一个行动

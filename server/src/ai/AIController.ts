@@ -7,6 +7,9 @@ interface AIAction {
   amount?: number;
 }
 
+// 最大加注金额限制
+const MAX_BET = 1000;
+
 export class AIController {
   // 决策入口
   decide(player: Player, room: Room, phase: GamePhase, communityCards: Card[]): AIAction {
@@ -22,51 +25,47 @@ export class AIController {
     }
   }
 
-  // Lv1: 陪练型 - 主要过牌或跟注，很少弃牌
+  // Lv1: 陪练型 - 主要过牌或跟注，偶尔弃牌（10%概率）
   private decideLv1(player: Player, room: Room, phase: GamePhase, communityCards: Card[]): AIAction {
-    const actions: ActionType[] = ['check', 'call', 'raise'];  // 移除 fold
     const maxBet = this.getMaxBet(room);
     const canCheck = player.currentBet >= maxBet;
     const callAmount = maxBet - player.currentBet;
 
-    // 过滤不可用的行动
-    let availableActions = actions.filter(a => {
-      if (a === 'check' && !canCheck) return false;
-      // 当不需要跟注时(callAmount=0)，不能选择 call，应该选择 check
-      if (a === 'call' && (callAmount <= 0 || player.chips < callAmount)) return false;
-      if (a === 'raise' && player.chips <= maxBet - player.currentBet + room.minRaise) return false;
-      return true;
-    });
+    // 计算手牌强度
+    const handStrength = player.holeCards
+      ? this.evaluateHandStrength(player.holeCards, communityCards, phase)
+      : 0;
 
-    // 如果没有可用行动，选择 all-in
-    if (availableActions.length === 0) {
-      return player.chips > 0 ? { action: 'all_in' } : { action: 'check' };
+    // 弱牌时10%概率弃牌
+    if (!canCheck && handStrength < 0.3 && Math.random() < 0.1) {
+      return { action: 'fold' };
     }
 
-    // 优先选择 check（当不需要跟注时），避免 fold
+    // 优先选择 check（当不需要跟注时）
     if (canCheck) {
       return { action: 'check' };
     }
 
-    // 如果需要跟注，优先选择 call 或 raise，避免 fold
-    const preferredActions = availableActions.filter(a => a === 'call' || a === 'raise');
-    const useActions = preferredActions.length > 0 ? preferredActions : availableActions;
-
-    const randomAction = useActions[Math.floor(Math.random() * useActions.length)];
-
-    if (randomAction === 'raise') {
-      // 计算正确的加注金额
-      const minRequired = maxBet + room.minRaise - player.currentBet;
-      // 随机加注金额：最小加注到 minRequired，最大到 all-in
-      const maxRaise = player.chips;
-      const raiseAmount = minRequired + Math.floor(Math.random() * Math.max(1, maxRaise - minRequired + 1));
-      return { action: 'raise', amount: raiseAmount };
+    // 如果需要跟注，根据手牌强度决策
+    if (handStrength > 0.5) {
+      // 好牌：加注
+      if (player.chips > maxBet - player.currentBet + room.minRaise) {
+        const raiseAmount = this.calculateRaiseAmountLimited(room, player, maxBet);
+        return { action: 'raise', amount: raiseAmount };
+      }
+      return { action: 'call' };
     }
 
-    return { action: randomAction };
+    // 一般牌：跟注
+    if (callAmount > 0 && player.chips >= callAmount) {
+      return { action: 'call' };
+    }
+
+    // 没筹码了
+    return player.chips > 0 ? { action: 'all_in' } : { action: 'check' };
   }
 
-  // Lv2: 概率型 - 根据手牌强度决策
+  // Lv2: 概率型 - 根据手牌强度决策，合理使用弃牌
   private decideLv2(player: Player, room: Room, phase: GamePhase, communityCards: Card[]): AIAction {
     if (!player.holeCards) return { action: 'check' };
 
@@ -81,24 +80,36 @@ export class AIController {
       return { action: 'check' };
     }
 
+    // 极弱牌（<0.2）：根据赔率决定是否弃牌
+    if (handStrength < 0.2) {
+      // 赔率极差时考虑弃牌（15%概率）
+      if (potOdds > 0.3 && Math.random() < 0.15) {
+        return { action: 'fold' };
+      }
+      if (canCheck) {
+        return { action: 'check' };
+      }
+      if (callAmount > 0 && player.chips >= callAmount) {
+        return { action: 'call' };
+      }
+      return player.chips > 0 ? { action: 'all_in' } : { action: 'check' };
+    }
+
     // 强牌：raise或bet
     if (handStrength > 0.7) {
       if (player.chips > maxBet - player.currentBet + room.minRaise) {
-        // 计算正确的加注金额，有随机性
-        const minRequired = maxBet + room.minRaise - player.currentBet;
-        const maxRaise = player.chips;
-        const raiseAmount = minRequired + Math.floor(Math.random() * Math.max(1, maxRaise - minRequired + 1));
+        const raiseAmount = this.calculateRaiseAmountLimited(room, player, maxBet);
         return { action: 'raise', amount: raiseAmount };
       }
       return { action: 'call' };
     }
 
-    // 中等牌：根据赔率决策，尽量不弃牌
+    // 中等牌：根据赔率决策
     if (handStrength > 0.4) {
       if (potOdds < handStrength) {
         return canCheck ? { action: 'check' } : { action: 'call' };
       }
-      // 赔率不好但尽量不弃牌
+      // 赔率不好但还可以
       if (canCheck) {
         return { action: 'check' };
       }
@@ -108,19 +119,23 @@ export class AIController {
       return { action: 'all_in' };
     }
 
-    // 弱牌：过牌或跟注，尽量不弃牌
+    // 弱牌（0.2-0.4）：过牌或跟注，小概率弃牌
     if (canCheck) {
       return { action: 'check' };
     }
     // 如果不能过牌但有筹码，选择跟注
     if (callAmount > 0 && player.chips >= callAmount) {
+      // 10%概率弃牌
+      if (Math.random() < 0.1) {
+        return { action: 'fold' };
+      }
       return { action: 'call' };
     }
     // 只能 all-in
     return { action: 'all_in' };
   }
 
-  // Lv3: 策略型 - 综合考虑位置、赔率、对手
+  // Lv3: 策略型 - 综合考虑位置、赔率、对手，合理弃牌
   private decideLv3(player: Player, room: Room, phase: GamePhase, communityCards: Card[]): AIAction {
     if (!player.holeCards) return { action: 'check' };
 
@@ -142,10 +157,25 @@ export class AIController {
     // 对手因素
     const opponentFactor = this.getOpponentFactor(player, room);
 
+    // 极弱牌：更可能弃牌
+    if (adjustedStrength < 0.15) {
+      // 赔率差时30%概率弃牌
+      if (potOdds > 0.25 && Math.random() < 0.3) {
+        return { action: 'fold' };
+      }
+      if (canCheck) {
+        return { action: 'check' };
+      }
+      if (callAmount > 0 && player.chips >= callAmount) {
+        return { action: 'call' };
+      }
+      return player.chips > 0 ? { action: 'all_in' } : { action: 'check' };
+    }
+
     // 综合决策
     if (adjustedStrength > 0.75 && opponentFactor > 0.5) {
       if (player.chips > maxBet - player.currentBet + room.minRaise) {
-        const raiseAmount = this.calculateRaiseAmount(room, player);
+        const raiseAmount = this.calculateRaiseAmountLimited(room, player, maxBet);
         return { action: 'raise', amount: raiseAmount };
       }
       return { action: 'call' };
@@ -172,11 +202,15 @@ export class AIController {
     // 后面位置或赔率好可以跟注，否则尝试 all-in
     if (positionFactor > 1.2 || potOdds < adjustedStrength) {
       if (player.chips >= callAmount) {
+        // Lv3偶尔会弃牌（5%概率）
+        if (Math.random() < 0.05) {
+          return { action: 'fold' };
+        }
         return { action: 'call' };
       }
     }
 
-    // 尽量不弃牌，选择 all-in
+    // 弱牌选择 all-in
     return player.chips > 0 ? { action: 'all_in' } : { action: 'check' };
   }
 
@@ -245,10 +279,9 @@ export class AIController {
     return callAmount / (pot + callAmount);
   }
 
-  // 计算加注金额
+  // 计算加注金额（限制最大为MAX_BET=1000）
   private calculateRaiseAmount(room: Room, player: Player): number {
     const maxBet = this.getMaxBet(room);
-    const baseRaise = room.minRaise;
     const potSize = room.pot;
 
     // 最小需要加注到的金额
@@ -261,6 +294,22 @@ export class AIController {
     const maxRaise = player.chips;
     const raiseAmount = minRequired + potRaise;
     return Math.min(Math.max(raiseAmount, minRequired), maxRaise);
+  }
+
+  // 计算加注金额（限制最大为MAX_BET=1000）
+  private calculateRaiseAmountLimited(room: Room, player: Player, maxBet: number): number {
+    // 最小需要加注到的金额
+    const minRequired = maxBet + room.minRaise - player.currentBet;
+
+    // 限制额外加注最大为 MAX_BET
+    const maxExtraRaise = Math.min(MAX_BET, player.chips - minRequired);
+    if (maxExtraRaise <= 0) {
+      return minRequired;
+    }
+
+    // 随机生成1到maxExtraRaise之间的额外加注金额
+    const extraRaise = Math.floor(Math.random() * maxExtraRaise) + 1;
+    return minRequired + extraRaise;
   }
 
   // 位置因素 - 已移除庄家概念，所有位置公平对待
