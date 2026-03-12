@@ -113,62 +113,39 @@
 /* 按钮组 */
 .home-buttons {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   justify-content: center;
+  flex-direction: row;
 }
 
 .create-room-btn,
 .join-room-btn {
-  padding: 16px 48px;
-  font-size: 16px;
-  font-weight: 600;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .create-room-btn {
-  background: linear-gradient(145deg, #145a46, #0a3d2e);
-  color: var(--color-gold);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-}
-
-.create-room-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.create-room-btn:hover:not(:disabled)::before {
-  left: 100%;
+  background: linear-gradient(145deg, #27ae60, #229954);
+  color: #fff;
 }
 
 .create-room-btn:hover:not(:disabled) {
-  background: linear-gradient(145deg, #1a6b54, #0f4a38);
-  box-shadow:
-    0 6px 25px rgba(20, 90, 70, 0.4),
-    0 0 20px rgba(212, 175, 55, 0.2);
+  filter: brightness(1.1);
   transform: translateY(-2px);
 }
 
 .join-room-btn {
-  background: linear-gradient(145deg, #1a3a5a, #0f2540);
-  color: var(--color-text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, #2980b9, #2471a3);
+  color: #fff;
 }
 
 .join-room-btn:hover:not(:disabled) {
-  background: linear-gradient(145deg, #244a70, #153550);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.1);
   transform: translateY(-2px);
 }
 
@@ -492,21 +469,19 @@
 }
 
 .kick-btn {
-  background: linear-gradient(145deg, #7c2418, #5c1a10);
-  color: #ffcdcd;
+  background: linear-gradient(145deg, #c0392b, #a93226);
+  color: #fff;
   border: none;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
-  margin-left: 12px;
-  opacity: 0.7;
-  transition: all 0.3s ease;
+  font-size: 11px;
+  margin-left: 10px;
+  transition: all 0.2s ease;
 }
 
 .kick-btn:hover {
-  opacity: 1;
-  background: linear-gradient(145deg, #8c2a1a, #6c2218);
+  filter: brightness(1.1);
 }
 
 /* 添加AI */
@@ -546,71 +521,52 @@
   box-shadow: 0 4px 15px rgba(94, 44, 125, 0.4);
 }
 
-/* 开始游戏按钮 */
-.start-game-btn {
-  padding: 18px 60px;
-  font-size: 18px;
-  font-weight: 700;
-  background: linear-gradient(145deg, #145a46, #0a3d2e);
-  color: var(--color-gold);
-  border: 2px solid var(--color-gold);
-  border-radius: 12px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.start-game-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
-  transition: left 0.6s ease;
-}
-
-.start-game-btn:hover {
-  background: linear-gradient(145deg, #1a6b54, #0f4a38);
-  box-shadow:
-    0 8px 30px rgba(20, 90, 70, 0.5),
-    0 0 30px rgba(212, 175, 55, 0.3);
-  transform: translateY(-3px);
-}
-
-.start-game-btn:hover::before {
-  left: 100%;
+/* 房间按钮组 */
+.room-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .hint {
   color: var(--color-text-muted);
-  margin-bottom: 20px;
   font-size: 13px;
+}
+
+/* 开始游戏按钮 */
+.start-game-btn,
+.leave-btn {
+  padding: 14px 36px;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 160px;
+}
+
+.start-game-btn {
+  background: linear-gradient(145deg, #27ae60, #229954);
+  color: #fff;
+}
+
+.start-game-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
 }
 
 /* 离开房间按钮 */
 .leave-btn {
-  background: transparent;
-  color: var(--color-accent-red);
-  border: 1px solid var(--color-accent-red);
-  padding: 12px 36px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  transition: all 0.3s ease;
+  background: linear-gradient(145deg, #c0392b, #a93226);
+  color: #fff;
 }
 
 .leave-btn:hover {
-  background: var(--color-accent-red);
-  color: white;
-  box-shadow: 0 4px 20px rgba(192, 57, 43, 0.4);
+  filter: brightness(1.1);
+  transform: translateY(-2px);
 }
 
 /* 响应式 */

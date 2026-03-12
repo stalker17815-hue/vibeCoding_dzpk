@@ -1,5 +1,5 @@
 /* ============================================
-   底池显示样式 - 奢华风格
+   底池显示样式 - 放大版本
    ============================================ */
 
 .pot-display {
@@ -45,7 +45,7 @@
 
 .pot-amount {
   color: var(--color-gold-light);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   font-family: var(--font-display);
   text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);

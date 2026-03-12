@@ -123,20 +123,22 @@ export const Home: React.FC = () => {
             </div>
           )}
 
-          {/* 开始游戏按钮 */}
-          {isHost && room.players.length >= 2 && (
-            <button className="start-game-btn" onClick={handleStartGame}>
-              开始游戏
+          {/* 按钮组 */}
+          <div className="room-buttons">
+            {isHost && room.players.length >= 2 && (
+              <button className="start-game-btn" onClick={handleStartGame}>
+                开始游戏
+              </button>
+            )}
+
+            {room.players.length < 2 && (
+              <p className="hint">至少需要2名玩家才能开始游戏</p>
+            )}
+
+            <button className="leave-btn" onClick={leaveRoom}>
+              离开房间
             </button>
-          )}
-
-          {room.players.length < 2 && (
-            <p className="hint">至少需要2名玩家才能开始游戏</p>
-          )}
-
-          <button className="leave-btn" onClick={leaveRoom}>
-            离开房间
-          </button>
+          </div>
         </div>
       </div>
     );

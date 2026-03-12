@@ -8,7 +8,6 @@ interface PlayerSeatProps {
   isCurrentPlayer: boolean;
   isMe: boolean;
   showCards: boolean;
-  position: 'top' | 'left' | 'right' | 'bottom-left' | 'bottom-right';
   gameStarted?: boolean;
   dealingHoleCards?: boolean;
   seatIndex?: number;
@@ -26,7 +25,6 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({
   isCurrentPlayer,
   isMe,
   showCards,
-  position,
   gameStarted = false,
   dealingHoleCards = false,
   seatIndex = 0,
@@ -52,7 +50,7 @@ export const PlayerSeat: React.FC<PlayerSeatProps> = ({
   };
 
   return (
-    <div className={`player-seat player-seat-${position} ${isCurrentPlayer ? 'active' : ''} ${isMe ? 'me' : ''} ${player.status === 'folded' ? 'folded' : ''}`}>
+    <div className={`player-seat ${isCurrentPlayer ? 'active' : ''} ${isMe ? 'me' : ''} ${player.status === 'folded' ? 'folded' : ''}`}>
       {/* 状态标签 */}
       {player.status !== 'active' && (
         <div className={`player-status status-${player.status}`}>

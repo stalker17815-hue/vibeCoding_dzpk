@@ -5,7 +5,6 @@ import { PlayerSeat } from '../PlayerSeat';
 import { ActionPanel } from '../ActionPanel';
 import { PotDisplay } from '../PotDisplay';
 import { ShuffleAnimation } from '../ShuffleAnimation';
-import { useGame } from '../../hooks/useGame';
 import './PokerTable.css';
 
 // 辅助函数：将手牌类型转换为中文
@@ -25,20 +24,46 @@ const getHandName = (handType: string): string => {
   return handNames[handType] || handType;
 };
 
-const getPositionClass = (seatIndex: number, playerCount: number): string => {
-  const positions: Record<number, string[]> = {
-    2: ['bottom-left', 'top'],
-    3: ['bottom-left', 'top', 'bottom-right'],
-    4: ['bottom-left', 'left', 'top', 'bottom-right'],
-    5: ['bottom-left', 'left', 'top', 'right', 'bottom-right'],
+// 辅助函数：将游戏阶段转换为中文
+const getPhaseName = (phase: string): string => {
+  const phaseNames: Record<string, string> = {
+    'preflop': '翻牌前',
+    'flop': '翻牌',
+    'turn': '转牌',
+    'river': '河牌',
+    'showdown': '摊牌',
+    'finished': '结束'
   };
-
-  return positions[playerCount]?.[seatIndex] || 'bottom-left';
+  return phaseNames[phase] || phase;
 };
 
-export const PokerTable: React.FC = () => {
+interface PokerTableProps {
+  onStartGame?: () => void;
+  onLeaveRoom?: () => void;
+  // Action panel props
+  canCheck?: boolean;
+  canCall?: boolean;
+  canRaise?: boolean;
+  canAllIn?: boolean;
+  minRaise?: number;
+  maxRaise?: number;
+  onAction?: (action: any, amount?: number) => void;
+  actionDisabled?: boolean;
+}
+
+export const PokerTable: React.FC<PokerTableProps> = ({
+  onStartGame,
+  onLeaveRoom,
+  canCheck,
+  canCall,
+  canRaise,
+  canAllIn,
+  minRaise,
+  maxRaise,
+  onAction,
+  actionDisabled,
+}) => {
   const { room, playerId, gameState, myCards, isShuffling, dealingHoleCards: dealingHoleCardsFromStore, showdownResults, clearGameLogs, error, setError } = useGameStore();
-  const { playerAction, startGame, leaveRoom } = useGame();
   const prevCommunityCount = useRef(0);
   const [dealingCards, setDealingCards] = useState<number[]>([]);
 
@@ -67,40 +92,17 @@ export const PokerTable: React.FC = () => {
     myPlayer !== undefined &&
     myPlayer.seatIndex === gameState.currentPlayerSeat;
 
-  const maxBet = Math.max(...players.map(p => p.currentBet), 0);
-  const myCurrentBet = myPlayer?.currentBet || 0;
-  const callAmount = maxBet - myCurrentBet;
-
-  const canCheck = myCurrentBet >= maxBet;
-  const canCall = callAmount > 0 && callAmount <= (myPlayer?.chips || 0);
-  // 加注需要：需要跟注的金额 + 最小加注额
-  // 可用于额外加注的筹码 = 玩家筹码 - 需要跟注的金额
-  const callAndRaiseAmount = callAmount + (gameState?.minRaise || 0);
-  const canRaise = (myPlayer?.chips || 0) >= callAndRaiseAmount;
-  // 单次下注上限为1000
-  const maxExtraRaise = Math.min((myPlayer?.chips || 0) - callAmount, 1000); // 额外加注的最大金额
-  const canAllIn = (myPlayer?.chips || 0) > 0;
-
-  // 玩家是否正在行动（等待服务端响应）
-  const [actionInProgress, setActionInProgress] = useState(false);
-
-  const handleAction = (action: any, amount?: number) => {
-    // 禁用按钮，防止重复点击
-    setActionInProgress(true);
-    playerAction(action, amount);
-  };
-
   // 当收到新的游戏状态时，重置行动状态
   useEffect(() => {
     if (gameState) {
-      setActionInProgress(false);
+      // Reset action in progress if needed
     }
   }, [gameState?.currentPlayerSeat]);
 
   // 当出现错误时，也重置行动状态（让玩家可以重新选择）
   useEffect(() => {
     if (error) {
-      setActionInProgress(false);
+      // Reset on error if needed
     }
   }, [error]);
 
@@ -134,48 +136,98 @@ export const PokerTable: React.FC = () => {
   // 渲染公共牌
   const communityCards = gameState?.communityCards || [];
 
+  const getSeatLayoutClass = (count: number): string => {
+    return `seat-layout-${Math.min(count, 6)}`;
+  };
+
   return (
     <div className="poker-table-container">
       {/* 洗牌动画 */}
       <ShuffleAnimation isActive={isShuffling} />
 
       <div className="poker-table">
-        {/* 房间信息 */}
-        <div className="room-info">
-          <span className="room-code">房间号: {room.code}</span>
-          <span className="game-phase">{gameState?.phase ? `【${gameState.phase.toUpperCase()}】` : ''}</span>
-          <span className="blind-info">盲注: {room.sb}/{room.bb}</span>
-          {currentPlayer && (
-            <span className="current-player">
-              当前: {currentPlayer.name}
-              {currentPlayer.type === 'ai' ? '(AI)' : ''}
-              {isMyTurn && <span className="countdown">{countdown}s</span>}
-            </span>
-          )}
-          {error && (
-            <span className="error-message" onClick={() => setError(null)}>
-              {error}
-            </span>
-          )}
+        {/* 顶部信息栏 */}
+        <div className="table-header">
+          <div className="room-info">
+            <span className="room-code">房间 {room.code}</span>
+            {gameState?.phase && (
+              <span className="game-phase">{getPhaseName(gameState.phase)}</span>
+            )}
+            <span className="blind-info">{room.sb}/{room.bb}</span>
+            {currentPlayer && (
+              <span className="current-player">
+                {currentPlayer.name}
+                {currentPlayer.type === 'ai' && ' (AI)'}
+                {isMyTurn && <span className="countdown">{countdown}s</span>}
+              </span>
+            )}
+            {error && (
+              <span className="error-message" onClick={() => setError(null)}>
+                {error}
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* 公共牌区域 */}
-        <div className="community-cards">
-          {communityCards.map((card, index) => (
-            <Card key={index} card={card} animate={dealingCards.includes(index)} />
-          ))}
-          {/* 空白位置 */}
-          {communityCards.length < 5 && Array(5 - communityCards.length).fill(null).map((_, i) => (
-            <Card key={`empty-${i}`} card={null} />
-          ))}
+        {/* 中间游戏区域 */}
+        <div className="table-center">
+          <div className="poker-table-surface">
+            {/* 公共牌区域 */}
+            <div className="community-cards">
+              {communityCards.map((card, index) => (
+                <Card key={index} card={card} animate={dealingCards.includes(index)} />
+              ))}
+              {/* 空白位置 */}
+              {communityCards.length < 5 && Array(5 - communityCards.length).fill(null).map((_, i) => (
+                <Card key={`empty-${i}`} card={null} />
+              ))}
+            </div>
+
+            {/* 底池显示 */}
+            <div className="pot-area">
+              <PotDisplay pot={gameState?.pot || 0} sidePots={gameState?.sidePots || []} />
+            </div>
+          </div>
+
+          {/* 玩家座位环绕 */}
+          <div className={`players-ring ${getSeatLayoutClass(players.length)}`}>
+            {players.map((player) => {
+              const isMe = player.id === playerId;
+              return (
+                <PlayerSeat
+                  key={player.id}
+                  player={player}
+                  isCurrentPlayer={gameState?.currentPlayerSeat === player.seatIndex}
+                  isMe={isMe}
+                  showCards={isMe ? showMyCards : (gameState?.phase === 'showdown' || room.status === 'ended')}
+                  gameStarted={room.status === 'playing'}
+                  dealingHoleCards={dealingHoleCardsFromStore}
+                  seatIndex={player.seatIndex}
+                  myHoleCards={isMe ? myCards : null}
+                />
+              );
+            })}
+          </div>
+
         </div>
 
-        {/* 底池显示 */}
-        <div className="pot-area">
-          <PotDisplay pot={gameState?.pot || 0} sidePots={gameState?.sidePots || []} />
-        </div>
+        {/* 行动面板 - 使用绝对定位，不影响其他元素 */}
+        {room.status === 'playing' && isMyTurn && (
+          <div className="inline-action-panel">
+            <ActionPanel
+              canCheck={canCheck || false}
+              canCall={canCall || false}
+              canRaise={canRaise || false}
+              canAllIn={canAllIn || false}
+              minRaise={minRaise || room.bb}
+              maxRaise={maxRaise || 0}
+              onAction={onAction || (() => {})}
+              disabled={actionDisabled || false}
+            />
+          </div>
+        )}
 
-        {/* 摊牌结果 - 详细列表 */}
+        {/* 摊牌结果 */}
         {showdownResults && (
           <div className="showdown-result">
             <div className="showdown-title">摊牌结果</div>
@@ -196,47 +248,41 @@ export const PokerTable: React.FC = () => {
                   <div className="player-name">
                     {p.isWinner && '🏆 '}
                     {p.playerName}
-                    {p.status === 'folded' && ' (已弃牌)'}
-                    {p.status === 'all_in' && ' (全下)'}
                   </div>
-                  <div className="player-bet">下注: {p.currentBet}</div>
                   {p.hand && (
-                    <div className="player-hand">牌型: {getHandName(p.hand.type)}</div>
+                    <div className="player-hand">{getHandName(p.hand.type)}</div>
                   )}
+                  <div className="player-cards-info">
+                    {p.cards && p.status !== 'folded' && (
+                      <div className="player-hole-cards">
+                        <span className="cards-label">底牌</span>
+                        <div className="cards-display">
+                          <Card card={p.cards[0]} small />
+                          <Card card={p.cards[1]} small />
+                        </div>
+                      </div>
+                    )}
+                    {p.hand?.handCards && p.hand.handCards.length > 0 && (
+                      <div className="player-best-hand">
+                        <span className="cards-label">组牌</span>
+                        <div className="cards-display">
+                          {p.hand.handCards.map((card, idx) => (
+                            <Card key={idx} card={card} small />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   {p.isWinner && (
-                    <div className="player-win">+{p.winAmount} 筹码</div>
-                  )}
-                  {/* 底牌 */}
-                  {p.cards && p.status !== 'folded' && (
-                    <div className="player-hole-cards">
-                      <span className="cards-label">底牌:</span>
-                      <div className="cards-display">
-                        <Card card={p.cards[0]} small />
-                        <Card card={p.cards[1]} small />
-                      </div>
-                    </div>
-                  )}
-                  {/* 组成的最佳牌型 (5张) */}
-                  {p.hand?.handCards && p.hand.handCards.length > 0 && (
-                    <div className="player-best-hand">
-                      <span className="cards-label">组牌:</span>
-                      <div className="cards-display">
-                        {p.hand.handCards.map((card, idx) => (
-                          <Card key={idx} card={card} small />
-                        ))}
-                      </div>
-                    </div>
+                    <div className="player-win">+{p.winAmount}</div>
                   )}
                 </div>
               ))}
             </div>
-            {/* 房主开始下一局按钮 */}
             {playerId === room?.hostId && (
               <button className="next-hand-btn" onClick={() => {
-                // 清空右侧当前游戏日志，重新开始记录
                 clearGameLogs();
-                // 开始下一局
-                startGame();
+                if (onStartGame) onStartGame();
               }}>
                 开始下一局
               </button>
@@ -251,7 +297,7 @@ export const PokerTable: React.FC = () => {
             <div className="game-over-text">房间内剩余玩家不足，无法继续游戏</div>
             {playerId === room?.hostId && (
               <button className="restart-btn" onClick={() => {
-                leaveRoom();
+                if (onLeaveRoom) onLeaveRoom();
               }}>
                 退出房间
               </button>
@@ -259,53 +305,6 @@ export const PokerTable: React.FC = () => {
           </div>
         )}
 
-        {/* 玩家座位 */}
-        {players.map((player) => {
-          const position = getPositionClass(player.seatIndex, players.length);
-          const isMe = player.id === playerId;
-
-          // 已移除庄家、小盲、大盲概念
-
-          return (
-            <PlayerSeat
-              key={player.id}
-              player={player}
-              isCurrentPlayer={gameState?.currentPlayerSeat === player.seatIndex}
-              isMe={isMe}
-              showCards={isMe ? showMyCards : (gameState?.phase === 'showdown' || room.status === 'ended')}
-              position={position as any}
-              gameStarted={room.status === 'playing'}
-              dealingHoleCards={dealingHoleCardsFromStore}
-              seatIndex={player.seatIndex}
-              myHoleCards={isMe ? myCards : null}
-            />
-          );
-        })}
-
-        {/* 调试信息 */}
-        <div className="debug-info">
-          <div>room.status: {room.status}</div>
-          <div>currentPlayerSeat: {gameState?.currentPlayerSeat}</div>
-          <div>myPlayer: {myPlayer ? `${myPlayer.name} (seat ${myPlayer.seatIndex}, status ${myPlayer.status})` : 'null'}</div>
-          <div>isMyTurn: {isMyTurn ? 'true' : 'false'}</div>
-          <div>lastAction: {gameState?.lastAction ? `${gameState.lastAction.action} by seat ${gameState.lastAction.playerSeat}` : 'null'}</div>
-        </div>
-
-        {/* 行动面板 - 简化条件，只要轮到我就显示 */}
-        {room.status === 'playing' && isMyTurn && (
-          <div className="action-area">
-            <ActionPanel
-              canCheck={canCheck}
-              canCall={canCall}
-              canRaise={canRaise}
-              canAllIn={canAllIn}
-              minRaise={gameState?.minRaise || room.bb}
-              maxRaise={maxExtraRaise}
-              onAction={handleAction}
-              disabled={actionInProgress}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

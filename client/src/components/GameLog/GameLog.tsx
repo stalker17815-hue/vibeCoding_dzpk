@@ -34,6 +34,35 @@ export const GameLog: React.FC<GameLogProps> = ({ entries, playerNames }) => {
     return date.toLocaleTimeString('zh-CN', { hour12: false });
   };
 
+  // 解析消息，高亮金额和行动
+  const renderMessage = (message: string, type: string) => {
+    if (type === 'action') {
+      // 定义行动关键词和对应的高亮类名
+      const actions: Record<string, string> = {
+        '过牌': 'action-check',
+        '弃牌': 'action-fold',
+        '跟注': 'action-call',
+        '加注': 'action-raise',
+        '全下': 'action-allin',
+      };
+
+      // 替换行动关键词
+      let result = message;
+      for (const [action, className] of Object.entries(actions)) {
+        result = result.replace(new RegExp(action, 'g'), `<span class="${className}">${action}</span>`);
+      }
+
+      // 匹配金额数字
+      const parts = result.split(/(\d+)/);
+      return (
+        <span dangerouslySetInnerHTML={{ __html: parts.map((part) =>
+          /^\d+$/.test(part) ? `<span class="bet-amount">${part}</span>` : part
+        ).join('') }} />
+      );
+    }
+    return message;
+  };
+
   return (
     <div className="game-log-container">
       <div className="game-log-header">
@@ -51,7 +80,7 @@ export const GameLog: React.FC<GameLogProps> = ({ entries, playerNames }) => {
                 {entry.type === 'ai-thinking' ? (
                   <>🤔 {getPlayerName(entry.playerSeat)} 正在思考...</>
                 ) : (
-                  entry.message
+                  renderMessage(entry.message, entry.type)
                 )}
               </span>
             </div>
