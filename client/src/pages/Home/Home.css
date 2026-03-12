@@ -1,0 +1,646 @@
+/* ============================================
+   首页样式 - 奢华赌场风格
+   ============================================ */
+
+.home-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 装饰性背景元素 */
+.home-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.home-content {
+  text-align: center;
+  background: linear-gradient(145deg, rgba(10, 61, 46, 0.95), rgba(6, 42, 31, 0.98));
+  padding: 50px 70px;
+  border-radius: 24px;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+  animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 金色边框装饰 */
+.home-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+.home-content h1 {
+  color: var(--color-gold);
+  font-size: 52px;
+  margin-bottom: 40px;
+  text-shadow:
+    0 0 30px rgba(212, 175, 55, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+  display: inline-block;
+}
+
+/* 标题装饰线 */
+.home-content h1::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+/* 输入框组 */
+.name-input {
+  margin-bottom: 30px;
+}
+
+.name-input label {
+  display: block;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.name-input input {
+  padding: 16px 28px;
+  font-size: 18px;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--color-text-primary);
+  width: 260px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.name-input input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.name-input input:focus {
+  border-color: var(--color-gold);
+  box-shadow:
+    0 0 0 4px rgba(212, 175, 55, 0.15),
+    0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* 按钮组 */
+.home-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.create-room-btn,
+.join-room-btn {
+  padding: 16px 48px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  position: relative;
+  overflow: hidden;
+}
+
+.create-room-btn {
+  background: linear-gradient(145deg, #145a46, #0a3d2e);
+  color: var(--color-gold);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.create-room-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.create-room-btn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.create-room-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #1a6b54, #0f4a38);
+  box-shadow:
+    0 6px 25px rgba(20, 90, 70, 0.4),
+    0 0 20px rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
+}
+
+.join-room-btn {
+  background: linear-gradient(145deg, #1a3a5a, #0f2540);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.join-room-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #244a70, #153550);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.create-room-btn:disabled,
+.join-room-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 错误消息 */
+.connection-error,
+.error-message {
+  padding: 14px 24px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  font-size: 14px;
+  animation: slideDown 0.3s ease;
+}
+
+.connection-error {
+  background: linear-gradient(145deg, #7c2418, #5c1a10);
+  color: #ffcdcd;
+  border: 1px solid rgba(192, 57, 43, 0.5);
+}
+
+.error-message {
+  background: linear-gradient(145deg, #7c4a18, #5c3510);
+  color: #ffecd0;
+  border: 1px solid rgba(230, 126, 34, 0.5);
+}
+
+/* 弹窗遮罩 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  background: linear-gradient(145deg, #0d2820, #081815);
+  padding: 40px;
+  border-radius: 20px;
+  min-width: 380px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(212, 175, 55, 0.1);
+  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  border-radius: 2px;
+}
+
+.modal h3 {
+  color: var(--color-gold);
+  margin-bottom: 30px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.modal-input {
+  margin-bottom: 30px;
+}
+
+.modal-input label {
+  display: block;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.modal-input input {
+  width: 100%;
+  padding: 16px;
+  font-size: 22px;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--color-gold-light);
+  text-align: center;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.modal-input input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.modal-buttons button {
+  padding: 14px 36px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.modal-buttons button:first-child {
+  background: linear-gradient(145deg, #145a46, #0a3d2e);
+  color: var(--color-gold);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.modal-buttons button:first-child:hover {
+  background: linear-gradient(145deg, #1a6b54, #0f4a38);
+  box-shadow: 0 4px 20px rgba(20, 90, 70, 0.4);
+}
+
+.modal-buttons button.cancel {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-buttons button.cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+}
+
+/* 等待房间 */
+.room-waiting {
+  text-align: center;
+  background: rgba(10, 40, 30, 0.9);
+  padding: 40px 60px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.room-waiting h2 {
+  color: var(--color-gold);
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.room-code-display {
+  background: linear-gradient(145deg, rgba(20, 70, 50, 0.5), rgba(10, 40, 30, 0.5));
+  padding: 20px 40px;
+  border-radius: 14px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.room-code-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+.room-code-display .code {
+  color: var(--color-gold-light);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  font-family: var(--font-display);
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+.room-code-display .label {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 8px;
+}
+
+/* 盲注设置 */
+.blind-setting {
+  margin-bottom: 30px;
+}
+
+.blind-setting h4 {
+  color: var(--color-text-secondary);
+  margin-bottom: 15px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.blind-options {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.blind-options button {
+  padding: 10px 20px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.blind-options button:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.blind-options button.active {
+  background: linear-gradient(145deg, rgba(20, 90, 70, 0.5), rgba(10, 50, 40, 0.5));
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+/* 玩家列表 */
+.player-list {
+  margin-bottom: 30px;
+}
+
+.player-list h4 {
+  color: var(--color-text-secondary);
+  margin-bottom: 15px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.player-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.player-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.player-list li:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.player-list li.host {
+  border-color: rgba(212, 175, 55, 0.3);
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.player-name {
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+.host-badge {
+  background: linear-gradient(145deg, var(--color-gold-dark), var(--color-gold));
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ai-badge {
+  background: linear-gradient(145deg, #6c3483, #4a235a);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+}
+
+.player-chips {
+  color: var(--color-gold-light);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.kick-btn {
+  background: linear-gradient(145deg, #7c2418, #5c1a10);
+  color: #ffcdcd;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 12px;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.kick-btn:hover {
+  opacity: 1;
+  background: linear-gradient(145deg, #8c2a1a, #6c2218);
+}
+
+/* 添加AI */
+.add-ai {
+  margin-bottom: 30px;
+}
+
+.add-ai h4 {
+  color: var(--color-text-secondary);
+  margin-bottom: 15px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.ai-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.ai-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(145deg, #5c2d7c, #3d1a5c);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.ai-buttons button:hover {
+  background: linear-gradient(145deg, #6c3d8c, #4d2a6c);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(94, 44, 125, 0.4);
+}
+
+/* 开始游戏按钮 */
+.start-game-btn {
+  padding: 18px 60px;
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(145deg, #145a46, #0a3d2e);
+  color: var(--color-gold);
+  border: 2px solid var(--color-gold);
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.start-game-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.start-game-btn:hover {
+  background: linear-gradient(145deg, #1a6b54, #0f4a38);
+  box-shadow:
+    0 8px 30px rgba(20, 90, 70, 0.5),
+    0 0 30px rgba(212, 175, 55, 0.3);
+  transform: translateY(-3px);
+}
+
+.start-game-btn:hover::before {
+  left: 100%;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+/* 离开房间按钮 */
+.leave-btn {
+  background: transparent;
+  color: var(--color-accent-red);
+  border: 1px solid var(--color-accent-red);
+  padding: 12px 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.leave-btn:hover {
+  background: var(--color-accent-red);
+  color: white;
+  box-shadow: 0 4px 20px rgba(192, 57, 43, 0.4);
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .home-content {
+    padding: 30px 25px;
+    margin: 20px;
+  }
+
+  .home-content h1 {
+    font-size: 32px;
+  }
+
+  .name-input input {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .home-buttons {
+    flex-direction: column;
+  }
+
+  .create-room-btn,
+  .join-room-btn {
+    width: 100%;
+  }
+
+  .modal {
+    min-width: 90%;
+    margin: 20px;
+    padding: 30px 20px;
+  }
+}

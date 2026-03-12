@@ -1,0 +1,237 @@
+/* ============================================
+   奢华赌场主题 - 全局样式
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+:root {
+  /* 主色调 - 奢华深绿 */
+  --color-primary: #0a3d2e;
+  --color-primary-light: #145a46;
+  --color-primary-dark: #062a1f;
+
+  /* 金色点缀 */
+  --color-gold: #d4af37;
+  --color-gold-light: #f4d03f;
+  --color-gold-dark: #b8860b;
+
+  /* 强调色 */
+  --color-accent-red: #c0392b;
+  --color-accent-blue: #2980b9;
+  --color-accent-purple: #8e44ad;
+
+  /* 中性色 */
+  --color-bg-dark: #0d1a15;
+  --color-bg-card: rgba(10, 61, 46, 0.85);
+  --color-bg-overlay: rgba(0, 0, 0, 0.88);
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #bdc3c7;
+  --color-text-muted: #7f8c8d;
+
+  /* 扑克牌色 */
+  --color-card-red: #e74c3c;
+  --color-card-black: #1a1a2e;
+  --color-card-back: linear-gradient(135deg, #1a472a 25%, #2d5a3f 25%, #2d5a3f 50%, #1a472a 50%, #1a472a 75%, #2d5a3f 75%);
+
+  /* 字体 */
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Noto Sans SC', sans-serif;
+
+  /* 阴影 */
+  --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.4);
+  --shadow-button: 0 4px 20px rgba(212, 175, 55, 0.3);
+  --shadow-glow-gold: 0 0 20px rgba(212, 175, 55, 0.4);
+
+  /* 边框 */
+  --border-radius-sm: 6px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 20px;
+  --border-gold: 2px solid var(--color-gold);
+}
+
+/* 全局重置 */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg-dark);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 背景纹理 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(20, 90, 70, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(212, 175, 55, 0.1) 0%, transparent 40%),
+    linear-gradient(180deg, #0d1a15 0%, #0a2520 50%, #0d1a15 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* 标题字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+/* 按钮基础样式 */
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* 输入框基础样式 */
+input {
+  font-family: var(--font-body);
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-dark);
+}
+
+/* 动画关键帧 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+  }
+}
+
+@keyframes cardFlip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+/* 工具类 */
+.text-gold {
+  color: var(--color-gold);
+}
+
+.text-gold-light {
+  color: var(--color-gold-light);
+}
+
+.bg-card {
+  background: var(--color-bg-card);
+  backdrop-filter: blur(10px);
+}
+
+.border-gold {
+  border: var(--border-gold);
+}
+
+.shadow-glow {
+  box-shadow: var(--shadow-glow-gold);
+}

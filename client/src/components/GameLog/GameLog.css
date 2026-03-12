@@ -1,0 +1,150 @@
+/* ============================================
+   游戏日志样式 - 奢华风格
+   ============================================ */
+
+.game-log-container {
+  position: fixed;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 240px;
+  height: 60vh;
+  max-height: 520px;
+  background: linear-gradient(180deg, rgba(10, 30, 20, 0.95), rgba(5, 18, 12, 0.98));
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(212, 175, 55, 0.08);
+  overflow: hidden;
+}
+
+/* 顶部装饰 */
+.game-log-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+}
+
+.game-log-header {
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(20, 60, 45, 0.9), rgba(10, 35, 25, 0.9));
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.game-log-title {
+  color: var(--color-gold);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.game-log-entries {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.game-log-entries::-webkit-scrollbar {
+  width: 6px;
+}
+
+.game-log-entries::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.game-log-entries::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 3px;
+}
+
+.game-log-empty {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 30px 20px;
+  font-style: italic;
+}
+
+.game-log-entry {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  animation: slideIn 0.3s ease-out;
+  border-left: 3px solid;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 行动日志 */
+.game-log-entry.action {
+  background: rgba(35, 100, 138, 0.15);
+  border-left-color: var(--color-accent-blue);
+}
+
+.game-log-entry.action .log-message {
+  color: #85c1e9;
+}
+
+/* 系统日志 */
+.game-log-entry.system {
+  background: rgba(100, 100, 100, 0.15);
+  border-left-color: var(--color-text-muted);
+}
+
+.game-log-entry.system .log-message {
+  color: var(--color-text-secondary);
+}
+
+/* 游戏事件日志 */
+.game-log-entry.game {
+  background: rgba(212, 175, 55, 0.12);
+  border-left-color: var(--color-gold);
+}
+
+.game-log-entry.game .log-message {
+  color: var(--color-gold-light);
+}
+
+/* AI思考日志 */
+.game-log-entry.ai-thinking {
+  background: rgba(92, 45, 124, 0.15);
+  border-left-color: var(--color-accent-purple);
+}
+
+.game-log-entry.ai-thinking .log-message {
+  color: #bb8fce;
+}
+
+.log-time {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  margin-right: 6px;
+  font-family: var(--font-body);
+}
+
+.log-message {
+  word-break: break-word;
+}

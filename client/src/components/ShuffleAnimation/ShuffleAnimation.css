@@ -1,0 +1,172 @@
+/* ============================================
+   洗牌动画样式 - 奢华赌场风格
+   ============================================ */
+
+.shuffle-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(5, 20, 15, 0.97), rgba(0, 10, 8, 0.99));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* 背景装饰 */
+.shuffle-overlay::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.shuffle-container {
+  text-align: center;
+  position: relative;
+}
+
+.shuffle-title {
+  color: var(--color-gold);
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 50px;
+  animation: pulse 1.5s ease-in-out infinite;
+  text-shadow:
+    0 0 30px rgba(212, 175, 55, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.15em;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+}
+
+/* 扑克牌动画 */
+.shuffle-cards {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 50px;
+  perspective: 1000px;
+}
+
+.shuffle-card {
+  font-size: 64px;
+  animation: shuffleMove 0.6s ease-in-out infinite alternate;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+}
+
+.shuffle-card.card-1 { animation-delay: 0s; }
+.shuffle-card.card-2 { animation-delay: 0.1s; }
+.shuffle-card.card-3 { animation-delay: 0.2s; }
+.shuffle-card.card-4 { animation-delay: 0.3s; }
+.shuffle-card.card-5 { animation-delay: 0.4s; }
+
+@keyframes shuffleMove {
+  0% {
+    transform: translateY(0) rotate(-6deg) scale(1);
+  }
+  100% {
+    transform: translateY(-35px) rotate(6deg) scale(1.05);
+  }
+}
+
+/* 进度条 */
+.shuffle-progress {
+  width: 320px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0 auto;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.shuffle-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg,
+    var(--color-gold-dark) 0%,
+    var(--color-gold) 50%,
+    var(--color-gold-light) 100%);
+  border-radius: 5px;
+  animation: progressShuffle 3s linear forwards;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  position: relative;
+}
+
+/* 进度条闪光效果 */
+.shuffle-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes progressShuffle {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* 发光装饰 */
+.shuffle-glow {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  animation: glowRotate 4s linear infinite;
+}
+
+.shuffle-glow.top {
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.shuffle-glow.bottom {
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-direction: reverse;
+}
+
+@keyframes glowRotate {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to { transform: translateX(-50%) rotate(360deg); }
+}
