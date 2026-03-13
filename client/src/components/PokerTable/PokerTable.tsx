@@ -161,11 +161,6 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                 {isMyTurn && <span className="countdown">{countdown}s</span>}
               </span>
             )}
-            {error && (
-              <span className="error-message" onClick={() => setError(null)}>
-                {error}
-              </span>
-            )}
           </div>
         </div>
 
@@ -244,12 +239,14 @@ export const PokerTable: React.FC<PokerTableProps> = ({
 
             <div className="showdown-list">
               {showdownResults.players.map((p, index) => (
-                <div key={index} className={`showdown-player ${p.isWinner ? 'winner' : ''} ${p.status === 'folded' ? 'folded' : ''}`}>
+                <div key={index} className={`showdown-player ${p.isWinner ? 'winner' : ''} ${p.status === 'folded' ? 'folded' : ''} ${p.chips === 0 ? 'bankrupt' : ''}`}>
                   <div className="player-name">
                     {p.isWinner && '🏆 '}
                     {p.playerName}
+                    {p.status === 'folded' && <span className="player-status-tag folded">弃牌</span>}
+                    {p.chips === 0 && <span className="player-status-tag bankrupt">破产</span>}
                   </div>
-                  {p.hand && (
+                  {p.hand && p.status !== 'folded' && (
                     <div className="player-hand">{getHandName(p.hand.type)}</div>
                   )}
                   <div className="player-cards-info">
@@ -287,6 +284,15 @@ export const PokerTable: React.FC<PokerTableProps> = ({
                 开始下一局
               </button>
             )}
+          </div>
+        )}
+
+        {/* 错误提示 - 弹框显示在摊牌结果上层 */}
+        {error && (
+          <div className="error-popup" onClick={() => setError(null)}>
+            <div className="error-popup-content">
+              {error}
+            </div>
           </div>
         )}
 

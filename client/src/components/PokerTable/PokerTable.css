@@ -125,6 +125,34 @@
   border: 1px solid rgba(139, 35, 35, 0.5);
 }
 
+/* 错误弹框 - 显示在摊牌结果上层 */
+.error-popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.error-popup-content {
+  background: linear-gradient(135deg, #8B2323 0%, #5C1515 100%);
+  color: #fff;
+  padding: 20px 40px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(139, 35, 35, 0.5);
+  animation: shake 0.5s ease-in-out;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-4px); }
@@ -338,6 +366,32 @@
 
 .showdown-player.winner .player-name {
   color: var(--color-gold-light);
+}
+
+/* 玩家状态标签 */
+.player-status-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.player-status-tag.folded {
+  background: rgba(139, 35, 35, 0.6);
+  color: #ff6b6b;
+  border: 1px solid rgba(139, 35, 35, 0.8);
+}
+
+.player-status-tag.bankrupt {
+  background: rgba(80, 80, 80, 0.6);
+  color: #aaa;
+  border: 1px solid rgba(100, 100, 100, 0.8);
+}
+
+.showdown-player.bankrupt {
+  opacity: 0.6;
 }
 
 .showdown-player .player-hand {

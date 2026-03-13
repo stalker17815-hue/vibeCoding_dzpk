@@ -894,15 +894,23 @@ export class GameFlow {
       }
     }
 
-    this.processAction(player, action.action, action.amount);
-    this.onEvent('game:action', {
-      playerSeat: player.seatIndex,
-      action: action.action,
-      amount: action.amount || 0
-    });
-    this.lastAction = { playerSeat: player.seatIndex, action: action.action, amount: action.amount || 0 };
-
-    this.nextTurn();
+    const success = this.processAction(player, action.action, action.amount);
+    if (success) {
+      this.onEvent('game:action', {
+        playerSeat: player.seatIndex,
+        action: action.action,
+        amount: action.amount || 0
+      });
+      this.lastAction = { playerSeat: player.seatIndex, action: action.action, amount: action.amount || 0 };
+      this.nextTurn();
+    } else {
+      // AI 行动失败，重新通知游戏状态，让 AI 重新决策
+      this.notifyGameState();
+      // 短暂延迟后让 AI 重新行动
+      setTimeout(() => {
+        this.processAIAction(player);
+      }, 1000);
+    }
   }
 
   // AI思考时间：根据AI等级，Lv1最快(2s)，Lv2中等(2-6s)，Lv3最慢(4-10s)
