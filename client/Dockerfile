@@ -1,9 +1,6 @@
 # =============== 构建阶段 ===============
 FROM node:20-alpine AS builder
 
-# 构建参数：后端服务器地址
-ARG VITE_SERVER_URL=http://localhost:3001
-
 WORKDIR /app
 
 # 复制 package 文件
@@ -15,8 +12,7 @@ RUN npm ci
 # 复制源代码
 COPY . .
 
-# 设置环境变量并构建项目
-ENV VITE_SERVER_URL=${VITE_SERVER_URL}
+# 构建项目（使用默认配置，前端连接同源地址）
 RUN npm run build
 
 # =============== 运行阶段 ===============

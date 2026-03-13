@@ -61,7 +61,7 @@ pipeline {
         stage('构建客户端Docker镜像') {
             steps {
                 echo "开始构建客户端 Docker 镜像: ${CLIENT_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-                sh "docker build --build-arg VITE_SERVER_URL=http://${SERVER_IMAGE_NAME}:3001 -t ${CLIENT_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f client/Dockerfile ./client"
+                sh "docker build -t ${CLIENT_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f client/Dockerfile ./client"
                 echo '客户端 Docker 镜像构建成功'
             }
         }
