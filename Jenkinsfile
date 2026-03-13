@@ -1,6 +1,6 @@
 // ==================== 全局变量配置 ====================
 // Git 配置
-def GIT_REPO = 'git@github.com:Deemo12138/vibeCoding_dzpk.git'
+def GIT_REPO = 'git@github.com:stalker17815-hue/vibeCoding_dzpk.git'
 def GIT_BRANCH = 'master'
 def GIT_CREDENTIALS_ID = 'github-ssh-key'
 

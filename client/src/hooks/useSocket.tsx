@@ -1,7 +1,10 @@
 import React, { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:3001';
+// 空字符串表示连接同源地址（当前页面域名）
+// 生产环境由 Nginx 代理 /socket.io/ 到后端容器
+// 开发环境可通过 .env 设置为 http://localhost:3001
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || '';
 
 // 创建 Context
 interface SocketContextType {

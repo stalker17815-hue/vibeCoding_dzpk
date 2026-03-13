@@ -40,7 +40,11 @@
       "Bash(cd \"D:\\\\AICoding\\\\client\" && npm run build 2>&1)",
       "Bash(echo \"\" > \"D:\\\\AICoding\\\\server\\\\logs\\\\game-2026-03-12.log\")",
       "Bash(git remote:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
